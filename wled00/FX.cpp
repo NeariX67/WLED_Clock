@@ -3590,8 +3590,8 @@ uint16_t WS2812FX::mode_clock(void) {
   uint8_t timeHour = hour(local) % 12;
   if(timeHour == 0) timeHour = 12;
   uint8_t timeMinute = minute(local);
-  uint8_t numberOfSegments = 3;     //1.5x Hours, 2x Minutes
-  uint8_t ledsPerSegment = 5;       //5 LEDs per Segmentfraction (7 Segment with each 3 LEDs = 21 LEDs)
+  uint8_t numberOfSegments = 3;     //1.5x Hours, 2x Minutes, because 12 hour format
+  uint8_t ledsPerSegment = 9;       //5 LEDs per Segmentfraction (7 Segment with each 3 LEDs = 21 LEDs)
 
   uint8_t digits[4];
   digits[0] = timeHour / 10;
