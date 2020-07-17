@@ -1,3 +1,20 @@
+## Modification info:
+This is a WLED Mod to fit DIY Machine's bench. [VIDEO](https://www.youtube.com/watch?v=8E0SeycTzHw)
+
+i added an effect called "Clock" that displays the current time on the shelf.
+Color 1 controls the minutes,
+Color 2 controls the hours,
+Color 3 controls the downlights.
+Colorpalettes are supported, but won't affect the downlights.
+
+You may need to change the "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3594).
+
+If you have built it just like in DIY Machine's Video, you will have 207 LEDs for the Clock and 12 LEDs for the Downlights.
+
+
+
+
+
 <p align="center">
   <img src="/images/wled_logo.png">
   <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
