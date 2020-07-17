@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+	<meta name="viewport" content="width=500">
+	<title>UI Settings</title>
+	<script>
+		function gId(s)
+		{
+			return document.getElementById(s);
+		}
+		function S()
+		{
+			GetV();Ct();
+		}
+		function H()
+		{
+			window.open("https://github.com/Aircoookie/WLED/wiki/Settings#user-interface-settings");
+		}
+		function B()
+		{
+			window.open("/settings","_self");
+		}
+		function Ct()
+		{
+			if (gId("co").selected)
+			{
+				gId("cth").style.display="block";
+			} else
+			{
+				gId("cth").style.display="none";
+			}
+		}
+		function GetV()
+		{
+			var d = document;
+		}
+	</script>
+	<style>
+		@import url("style.css");
+	</style>
+</head>
+<body onload="S()">
+	<form id="form_s" name="Sf" method="post">
+		<div class="helpB"><button type="button" onclick="H()">?</button></div>
+		<button type="button" onclick="B()">Back</button><button type="submit">Save</button><hr>
+		<h2>Web Setup</h2>
+		Server description: <input name="DS" maxlength="32"><br>
+    Sync button toggles both send and receive: <input type="checkbox" name="ST"><br><br>
+		<hr><button type="button" onclick="B()">Back</button><button type="submit">Save</button>
+	</form>
+</body>
+</html>
