@@ -3591,7 +3591,7 @@ uint16_t WS2812FX::mode_clock(void) {
   if(timeHour == 0) timeHour = 12;
   uint8_t timeMinute = minute(local);
   uint8_t numberOfSegments = 3;     //1.5x Hours, 2x Minutes, because 12 hour format
-  uint8_t ledsPerSegment = 9;       //5 LEDs per Segmentfraction (7 Segment with each 3 LEDs = 21 LEDs)
+  uint8_t ledsPerSegment = 3;       //5 LEDs per Segmentfraction (7 Segment with each 3 LEDs = 21 LEDs)
 
   uint8_t digits[4];
   digits[0] = timeHour / 10;
@@ -3627,10 +3627,7 @@ uint16_t WS2812FX::mode_clock(void) {
       setPixelColor(index+i, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 1));
     }
   }
-  else {
-    index += 2*ledsPerSegment;
-  }
-  for(int i = index; i < SEGLEN;i++) {
+  for(int i = (numberOfSegments*ledsPerSegment*7+(2*ledsPerSegment)); i < SEGLEN;i++) {
     setPixelColor(i, SEGCOLOR(2));
   }
 
