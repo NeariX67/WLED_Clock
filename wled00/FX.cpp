@@ -3578,6 +3578,13 @@ uint16_t WS2812FX::mode_chunchun(void)
   return FRAMETIME;
 }
 
+/*const boolean segmentArray[11][7] = {{0, 0, 0, 0, 0, 0, 0}, {1, 1, 0, 1, 1, 1, 1}, {0, 1, 0, 1, 0, 0, 0},
+                                     {1, 0, 1, 1, 1, 0, 1}, {1, 1, 1, 1, 1, 0, 0}, {0, 1, 1, 1, 0, 1, 0},
+                                     {1, 1, 1, 0, 1, 1, 0}, {1, 1, 1, 0, 1, 1, 1}, {0, 1, 0, 1, 1, 0, 0},
+                                     {1, 1, 1, 1, 1, 1, 1}, {1, 1, 1, 1, 1, 1, 0}
+};*/
+//This one is for my debugging clock, uses different order
+
 const boolean segmentArray[11][7] = {{0, 0, 0, 0, 0, 0, 0}, {1, 1, 1, 0, 1, 1, 1}, {1, 0, 0, 0, 1, 0, 0},
                                      {1, 1, 0, 1, 0, 1, 1}, {1, 1, 0, 1, 1, 1, 0}, {1, 0, 1, 1, 1, 0, 0},
                                      {0, 1, 1, 1, 1, 1, 0}, {0, 1, 1, 1, 1, 1, 1}, {1, 1, 0, 0, 1, 0, 0},
@@ -3591,7 +3598,7 @@ uint16_t WS2812FX::mode_clock(void) {
   if(timeHour == 0) timeHour = 12;
   uint8_t timeMinute = minute(local);
   uint8_t numberOfSegments = 3;     //1.5x Hours, 2x Minutes, because 12 hour format
-  uint8_t ledsPerSegment = 3;       //5 LEDs per Segmentfraction (7 Segment with each 3 LEDs = 21 LEDs)
+  uint8_t ledsPerSegment = 5;       //5 LEDs per Segmentfraction (7 Segment with each 3 LEDs = 21 LEDs)
 
   uint8_t digits[4];
   digits[0] = timeHour / 10;
@@ -3627,6 +3634,13 @@ uint16_t WS2812FX::mode_clock(void) {
       setPixelColor(index+i, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 1));
     }
   }
+  else {
+    for(uint8_t i = 0;i < 2*ledsPerSegment;i++) {
+      setPixelColor(index+i, 0);
+    }
+  }
+
+  
   for(int i = (numberOfSegments*ledsPerSegment*7+(2*ledsPerSegment)); i < SEGLEN;i++) {
     setPixelColor(i, SEGCOLOR(2));
   }
