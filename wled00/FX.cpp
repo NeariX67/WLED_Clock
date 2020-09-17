@@ -3592,9 +3592,9 @@ const boolean segmentArray[11][7] = {{0, 0, 0, 0, 0, 0, 0}, {1, 1, 1, 0, 1, 1, 1
 };
 
 
-//Comment or Uncomment this for your setup!
-#define USE_24H_FORMAT
-#define USE_SECONDS_DOTS
+//Comment or uncomment this for your setup!
+//#define USE_24H_FORMAT
+//#define USE_COLON_SEPARATOR
 
 uint16_t WS2812FX::mode_clock(void) {
 
@@ -3602,7 +3602,7 @@ uint16_t WS2812FX::mode_clock(void) {
   uint8_t timeSecond = second(local);
   uint8_t timeMinute = minute(local);
 
-  uint8_t ledsPerSegment = 5;       //5 LEDs per Segmentfraction (7 Segment with each 5 LEDs = 35 LEDs)
+  uint8_t ledsPerSegment = 9;       //9 LEDs per Segmentfraction (7 Segment with each 5 LEDs = 35 LEDs)
 
   #ifdef USE_24H_FORMAT
     uint8_t numberOfSegments = 4;     //2x Hours, 2x Minutes, because 24 hour format
@@ -3613,13 +3613,10 @@ uint16_t WS2812FX::mode_clock(void) {
     uint8_t timeHour = hour(local) % 12;
     if(timeHour == 0) timeHour = 12;
   #endif
-  
-  #ifdef USE_SECONDS_DOTS
-    numberOfSegments += 1;          //Use extra segment for second dots
-  #endif
 
-  #ifdef USE_SECONDS_DOTS
+  #ifdef USE_COLON_SEPARATOR
     uint8_t ledsPerDot = 1;         //1 LED per seconds dot, so 2 in total
+    #define dotColor 0x999999
   #endif
 
 
@@ -3634,7 +3631,6 @@ uint16_t WS2812FX::mode_clock(void) {
   uint8_t counter = (now * ((SEGMENT.speed >> 2) + 2)) & 0xFFFF;
   
   for (int i = numberOfSegments; i > 0; i--) {      //Cycle through digits
-    Serial.println(i);
     for (int j = 0; j < 7; j++) {                   //Cycle through each part of a digit
       for (int k = 0; k < ledsPerSegment; k++) {    //Cycle through each led per part of a digit
         if(segmentArray[digits[i]+1][j]) {          //If LEDs should light up:
@@ -3651,7 +3647,7 @@ uint16_t WS2812FX::mode_clock(void) {
             if(i == 3 || i == 2) {      //Minutes
               setPixelColor(index, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 0));
             }
-            else if(i == 1) { //Hours
+            else if(i == 1) {           //Hours
               setPixelColor(index, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 1));
             }
           #endif
@@ -3662,15 +3658,13 @@ uint16_t WS2812FX::mode_clock(void) {
         index++;
       }
     }
-    #ifdef USE_SECONDS_DOTS
-      //if(index >= (ledsPerSegment*7*2) && index < (ledsPerSegment*7*2+(2*ledsPerDot))) {  //Either this
-      if(numberOfSegments - 2 == i) {                                                       //Or this, should result in the same, i will test soon
+    #ifdef USE_COLON_SEPARATOR
+      if(numberOfSegments - 1 == i) {                                                       //Or this, should result in the same, i will test soon
         if(timeSecond % 2 == 0) {                                                           //Light up on even seconds
           for(int l = 0; l < ledsPerDot*2;l++) {
-            setPixelColor(index, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 0));
+            setPixelColor(index, dotColor);
             index++;
           }
-          Serial.println("Hey i flashed the seconds leds");
         }
         else {
           for(int l = 0; l < ledsPerDot*2;l++) {
@@ -3679,9 +3673,9 @@ uint16_t WS2812FX::mode_clock(void) {
           }
         }
       }
-    #endif  
+    #endif
   }
-  
+  #ifndef USE_24H_FORMAT
   if(timeHour >= 10) {
     for(uint8_t i = 0;i < 2*ledsPerSegment;i++) {
       setPixelColor(index+i, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 1));
@@ -3692,9 +3686,11 @@ uint16_t WS2812FX::mode_clock(void) {
       setPixelColor(index+i, 0);
     }
   }
+  index += 2*ledsPerSegment;
+  #endif
 
   
-  for(int i = (numberOfSegments*ledsPerSegment*7+(2*ledsPerSegment)); i < SEGLEN;i++) {
+  for(int i = index; i < SEGLEN;i++) {
     setPixelColor(i, SEGCOLOR(2));
   }
 

@@ -1,5 +1,6 @@
-## Modification info:
-This is a WLED Mod to fit DIY Machine's bench. [VIDEO](https://www.youtube.com/watch?v=8E0SeycTzHw)
+# Modification info:
+This is a WLED Mod to fit DIY Machine's shelf. [VIDEO](https://www.youtube.com/watch?v=8E0SeycTzHw)
+<br>But since i added more customization features, it is not limited to his project alone.
 
 i added an effect called "Clock" that displays the current time on the shelf.<br>
 Color 1 controls the minutes,<br>
@@ -7,12 +8,17 @@ Color 2 controls the hours,<br>
 Color 3 controls the downlights.<br>
 Colorpalettes are supported, but won't affect the downlights.<br>
 
-You may need to change the "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3594).
+
+## Customization:
+Change "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3605).
 <br>
-If you have built it just like in DIY Machine's Video, you will have 207 LEDs for the Clock and 12 LEDs for the Downlights.
+If you have built it just like in DIY Machine's video, you will have 207 LEDs for the clock and 12 LEDs for the downlights.<br><br>
+To enable the 24h format, use #define USE_24H_FORMAT ([FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3596))<br>
+To disable the 24h format, comment or delete #define USE_24H_FORMAT in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3596).
 <br><br>
-
-
+Same applies if you want to use the colon between hours and minutes, (un-)comment #define USE_COLON_SEPARATOR in line 3597.<br>
+The colon led count per dot is set in line 3618.<br>
+You can change the colon color as a hex-colorcode in line 3619 ( 0xFFFFFF for example )<br><br>
 
 
 <p align="center">
