@@ -76,7 +76,7 @@ function writeHtmlGzipped(sourceFile, resultFile) {
     }
 
     html = adoptVersionAndRepo(html);
-    zlib.gzip(html, function (error, result) {
+    zlib.gzip(html, { level: zlib.constants.Z_BEST_COMPRESSION }, function (error, result) {
       if (error) {
         console.warn(error);
         throw error;
@@ -202,6 +202,10 @@ writeChunks(
       append: ")=====",
       method: "plaintext",
       filter: "html-minify",
+      mangle: (str) =>
+        str
+          .replace("%", "%%")
+          .replace(/User Interface\<\/button\>\<\/form\>/gms, "User Interface\<\/button\>\<\/form\>%DMXMENU%"),
     },
     {
       file: "settings_wifi.htm",

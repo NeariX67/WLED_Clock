@@ -22,7 +22,8 @@ bool isAsterisksOnly(const char* str, byte maxLen)
     if (str[i] == 0) break;
     if (str[i] != '*') return false;
   }
-  return true;
+  //at this point the password contains asterisks only
+  return (str[0] != 0); //false on empty string
 }
 
 
@@ -637,8 +638,8 @@ bool handleSet(AsyncWebServerRequest *request, const String& req)
     nightlightActive = false; //always disable nightlight when toggling
     switch (getNumVal(&req, pos))
     {
-      case 0: if (bri != 0){briLast = bri; bri = 0;} break; //off
-      case 1: bri = briLast; break; //on
+      case 0: if (bri != 0){briLast = bri; bri = 0;} break; //off, only if it was previously on
+      case 1: if (bri == 0) bri = briLast; break; //on, only if it was previously off
       default: toggleOnOff(); //toggle
     }
   }
@@ -646,6 +647,10 @@ bool handleSet(AsyncWebServerRequest *request, const String& req)
   //Segment reverse
   pos = req.indexOf("RV=");
   if (pos > 0) strip.getSegment(main).setOption(SEG_OPTION_REVERSED, req.charAt(pos+3) != '0');
+
+  //Segment reverse
+  pos = req.indexOf("MI=");
+  if (pos > 0) strip.getSegment(main).setOption(SEG_OPTION_MIRROR, req.charAt(pos+3) != '0');
 
   //Segment brightness/opacity
   pos = req.indexOf("SB=");

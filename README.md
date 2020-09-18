@@ -1,28 +1,5 @@
-# Modification info:
-This is a WLED Mod to fit DIY Machine's shelf. [VIDEO](https://www.youtube.com/watch?v=8E0SeycTzHw)
-<br>But since i added more customization features, it is not limited to his project alone.
-
-i added an effect called "Clock" that displays the current time on the shelf.<br>
-Color 1 controls the minutes,<br>
-Color 2 controls the hours,<br>
-Color 3 controls the downlights.<br>
-Colorpalettes are supported, but won't affect the downlights.<br>
-
-
-## Customization:
-Change "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3605).
-<br>
-If you have built it just like in DIY Machine's video, you will have 207 LEDs for the clock and 12 LEDs for the downlights.<br><br>
-To enable the 24h format, use #define USE_24H_FORMAT ([FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3596))<br>
-To disable the 24h format, comment or delete #define USE_24H_FORMAT in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3596).
-<br><br>
-Same applies if you want to use the colon between hours and minutes, (un-)comment #define USE_COLON_SEPARATOR in line 3597.<br>
-The colon led count per dot is set in line 3618.<br>
-You can change the colon color as a hex-colorcode in line 3619 ( 0xFFFFFF for example )<br><br>
-
-
 <p align="center">
-  <img src="/images/wled_logo.png">
+  <img src="/images/wled_logo_akemi.png">
   <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
   <a href="https://wled.discourse.group"><img src="https://img.shields.io/discourse/topics?colorB=blue&label=forum&server=https%3A%2F%2Fwled.discourse.group%2F&style=flat-square"></a>
   <a href="https://discord.gg/KuqP7NE"><img src="https://img.shields.io/discord/473448917040758787.svg?colorB=blue&label=discord&style=flat-square"></a>
@@ -50,16 +27,16 @@ A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control 
 - Configurable Auto Brightness limit for safer operation  
 
 ## 💡 Supported light control interfaces
-- WLED app for Android and iOS  
+- WLED app for [Android](https://play.google.com/store/apps/details?id=com.aircoookie.WLED) and [iOS](https://apps.apple.com/us/app/wled/id1475695033)
 - JSON and HTTP request APIs  
 - MQTT  
 - Blynk IoT  
-- E1.31  
-- Hyperion  
+- E1.31, Art-Net and TPM2.net
+- [Hyperion](https://github.com/hyperion-project/hyperion.ng)
 - UDP realtime  
 - Alexa voice control (including dimming and color)  
 - Sync to Philips hue lights  
-- Adalight (PC ambilight via serial)  
+- Adalight (PC ambilight via serial) and TPM2  
 - Sync color of multiple WLED devices (UDP notifier)  
 - Infrared remotes (24-key RGB, receiver required)  
 - Simple timers/schedules (time from NTP, timezones/DST supported)  
@@ -94,6 +71,14 @@ TM1814 | 12v | RGBW
 WS2811 | 12v | 3-LED segments
 WS2815 | 12v | 
 GS8208 | 12v |
+
+## 🧊 Compatible PC RGB Fans and ARGB accessories
+Brand | Model | Comments
+|---|---|---|
+Corsair | HD120 Fan | Uses WS2812B, data-in only
+PCCOOLER | Moonlight 5-pack Fans | Uses WS2812B, includes Data-out connector to keep each fan uniquely addressable if wired in series like traditional LED strips
+Any | 5v 3-pin ARGB for PC | Any PC RGB device that supports the 5v 3-pin ARGB motherboard header should work fine with WLED. All the major motherboard vendors support the Corsair HD120 and PCCOOLER fans listed, so we can safely assume any device that supports motherboard ARGB 5V 3-Pin standard will work with WLED.
+
 
 ## ✌️ Other
 

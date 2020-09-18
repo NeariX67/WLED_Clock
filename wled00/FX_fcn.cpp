@@ -81,12 +81,17 @@ void WS2812FX::service() {
       if(nowUp > SEGENV.next_time || _triggered || (doShow && SEGMENT.mode == 0)) //last is temporary
       {
         if (SEGMENT.grouping == 0) SEGMENT.grouping = 1; //sanity check
-        _virtualSegmentLength = SEGMENT.virtualLength();
         doShow = true;
-        handle_palette();
-        uint16_t delay = (this->*_mode[SEGMENT.mode])();
+        uint16_t delay = FRAMETIME;
+
+        if (!SEGMENT.getOption(SEG_OPTION_FREEZE)) { //only run effect function if not frozen
+          _virtualSegmentLength = SEGMENT.virtualLength();
+          handle_palette();
+          delay = (this->*_mode[SEGMENT.mode])(); //effect function
+          if (SEGMENT.mode != FX_MODE_HALLOWEEN_EYES) SEGENV.call++;
+        }
+
         SEGENV.next_time = nowUp + delay;
-        if (SEGMENT.mode != FX_MODE_HALLOWEEN_EYES) SEGENV.call++;
       }
     }
   }
@@ -106,16 +111,25 @@ void WS2812FX::setPixelColor(uint16_t n, uint32_t c) {
   setPixelColor(n, r, g, b, w);
 }
 
+#define REV(i) (_length - 1 - (i))
+
+//used to map from segment index to physical pixel, taking into account grouping, offsets, reverse and mirroring
 uint16_t WS2812FX::realPixelIndex(uint16_t i) {
   int16_t iGroup = i * SEGMENT.groupLength();
 
   /* reverse just an individual segment */
   int16_t realIndex = iGroup;
-  if (IS_REVERSE) realIndex = SEGMENT.length() -iGroup -1;
+  if (IS_REVERSE) {
+    if (IS_MIRROR) {
+      realIndex = (SEGMENT.length() -1) / 2 - iGroup;  //only need to index half the pixels
+    } else {
+      realIndex = SEGMENT.length() - iGroup - 1;
+    }
+  }
 
   realIndex += SEGMENT.start;
   /* Reverse the whole string */
-  if (reverseMode) realIndex = _length - 1 - realIndex;
+  if (reverseMode) realIndex = REV(realIndex);
 
   return realIndex;
 }
@@ -172,14 +186,23 @@ void WS2812FX::setPixelColor(uint16_t i, byte r, byte g, byte b, byte w)
     for (uint16_t j = 0; j < SEGMENT.grouping; j++) {
       int16_t indexSet = realIndex + (reversed ? -j : j);
       int16_t indexSetRev = indexSet;
-      if (reverseMode) indexSetRev = _length - 1 - indexSet;
+      if (reverseMode) indexSetRev = REV(indexSet);
       #ifdef WLED_CUSTOM_LED_MAPPING
       if (indexSet < customMappingSize) indexSet = customMappingTable[indexSet];
       #endif
-      if (indexSetRev >= SEGMENT.start && indexSetRev < SEGMENT.stop) bus->SetPixelColor(indexSet + skip, col);
+      if (indexSetRev >= SEGMENT.start && indexSetRev < SEGMENT.stop) {
+        bus->SetPixelColor(indexSet + skip, col);
+        if (IS_MIRROR) { //set the corresponding mirrored pixel
+          if (reverseMode) {
+            bus->SetPixelColor(REV(SEGMENT.start) - indexSet + skip + REV(SEGMENT.stop) + 1, col);
+          } else {
+            bus->SetPixelColor(SEGMENT.stop - indexSet + skip + SEGMENT.start - 1, col);
+          }
+        }
+      }
     }
   } else { //live data, etc.
-    if (reverseMode) i = _length - 1 - i;
+    if (reverseMode) i = REV(i);
     #ifdef WLED_CUSTOM_LED_MAPPING
     if (i < customMappingSize) i = customMappingTable[i];
     #endif
@@ -368,6 +391,12 @@ void WS2812FX::setBrightness(uint8_t b) {
   if (_brightness == b) return;
   _brightness = (gammaCorrectBri) ? gamma8(b) : b;
   _segment_index = 0;
+  if (b == 0) { //unfreeze all segments on power off
+    for (uint8_t i = 0; i < MAX_NUM_SEGMENTS; i++)
+    {
+      _segments[i].setOption(SEG_OPTION_FREEZE, false);
+    }
+  }
   if (SEGENV.next_time > millis() + 22 && millis() - _lastShow > MIN_SHOW_DELAY) show();//apply brightness change immediately if no refresh soon
 }
 
@@ -500,6 +529,7 @@ void WS2812FX::resetSegments() {
   _segments[0].colors[0] = DEFAULT_COLOR;
   _segments[0].start = 0;
   _segments[0].speed = DEFAULT_SPEED;
+  _segments[0].intensity = DEFAULT_INTENSITY;
   _segments[0].stop = _length;
   _segments[0].grouping = 1;
   _segments[0].setOption(SEG_OPTION_SELECTED, 1);
@@ -512,9 +542,23 @@ void WS2812FX::resetSegments() {
     _segments[i].grouping = 1;
     _segments[i].setOption(SEG_OPTION_ON, 1);
     _segments[i].opacity = 255;
+    _segments[i].speed = DEFAULT_SPEED;
+    _segments[i].intensity = DEFAULT_INTENSITY;
     _segment_runtimes[i].reset();
   }
   _segment_runtimes[0].reset();
+}
+
+//After this function is called, setPixelColor() will use that segment (offsets, grouping, ... will apply)
+void WS2812FX::setPixelSegment(uint8_t n)
+{
+  if (n < MAX_NUM_SEGMENTS) {
+    _segment_index = n;
+    _virtualSegmentLength = SEGMENT.length();
+  } else {
+    _segment_index = 0;
+    _virtualSegmentLength = 0;
+  }
 }
 
 void WS2812FX::setRange(uint16_t i, uint16_t i2, uint32_t col)
@@ -577,6 +621,14 @@ void WS2812FX::fill(uint32_t c) {
   for(uint16_t i = 0; i < SEGLEN; i++) {
     setPixelColor(i, c);
   }
+}
+
+/*
+ * Blends the specified color with the existing pixel color.
+ */
+void WS2812FX::blendPixelColor(uint16_t n, uint32_t color, uint8_t blend)
+{
+  setPixelColor(n, color_blend(getPixelColor(n), color, blend));
 }
 
 /*
@@ -801,6 +853,16 @@ void WS2812FX::handle_palette(void)
   }
 }
 
+
+/*
+ * Gets a single color from the currently selected palette.
+ * @param i Palette Index (if mapping is true, the full palette will be SEGLEN long, if false, 255). Will wrap around automatically.
+ * @param mapping if true, LED position in segment is considered for color
+ * @param wrap FastLED palettes will usally wrap back to the start smoothly. Set false to get a hard edge
+ * @param mcol If the default palette 0 is selected, return the standard color 0, 1 or 2 instead. If >2, Party palette is used instead
+ * @param pbri Value to scale the brightness of the returned color by. Default is 255. (no scaling)
+ * @returns Single color from palette
+ */
 uint32_t WS2812FX::color_from_palette(uint16_t i, bool mapping, bool wrap, uint8_t mcol, uint8_t pbri)
 {
   if (SEGMENT.palette == 0 && mcol < 3) return SEGCOLOR(mcol); //WS2812FX default
@@ -812,6 +874,7 @@ uint32_t WS2812FX::color_from_palette(uint16_t i, bool mapping, bool wrap, uint8
   return  fastled_col.r*65536 +  fastled_col.g*256 +  fastled_col.b;
 }
 
+//@returns `true` if color, mode, speed, intensity and palette match
 bool WS2812FX::segmentsAreIdentical(Segment* a, Segment* b)
 {
   //if (a->start != b->start) return false;
