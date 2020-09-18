@@ -3602,7 +3602,7 @@ uint16_t WS2812FX::mode_clock(void) {
   uint8_t timeSecond = second(local);
   uint8_t timeMinute = minute(local);
 
-  uint8_t ledsPerSegment = 9;       //9 LEDs per Segmentfraction (7 Segment with each 5 LEDs = 35 LEDs)
+  uint8_t ledsPerSegment = 9;       //9 LEDs per Segmentfraction (7 Segment with each 9 LEDs = 63 LEDs)
 
   #ifdef USE_24H_FORMAT
     uint8_t numberOfSegments = 4;     //2x Hours, 2x Minutes, because 24 hour format
@@ -3636,10 +3636,10 @@ uint16_t WS2812FX::mode_clock(void) {
         if(segmentArray[digits[i]+1][j]) {          //If LEDs should light up:
           usedIndex++;
           #ifdef USE_24H_FORMAT
-            if(i == 4 || i == 3) {      //Minutes
+            if(i == 3 || i == 2) {      //Minutes
               setPixelColor(index, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 0));
             }
-            else if(i == 2 || i == 1) { //Hours
+            else if(i == 1 || i == 0) { //Hours
               setPixelColor(index, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 1));
             }
           #endif
