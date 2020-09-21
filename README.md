@@ -10,15 +10,14 @@ Colorpalettes are supported, but won't affect the downlights.<br>
 
 
 ## Customization:
-Change "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3605).
+Change "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3740).
 <br>
 If you have built it just like in DIY Machine's video, you will have 207 LEDs for the clock and 12 LEDs for the downlights.<br><br>
-To enable the 24h format, use #define USE_24H_FORMAT ([FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3596))<br>
-To disable the 24h format, comment or delete #define USE_24H_FORMAT in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3596).
+24h or 12h format is based on the wled time settings. Use checkbox "use 24h format" to switch between formats.
 <br><br>
-Same applies if you want to use the colon between hours and minutes, (un-)comment #define USE_COLON_SEPARATOR in line 3597.<br>
-The colon led count per dot is set in line 3618.<br>
-You can change the colon color as a hex-colorcode in line 3619 ( 0xFFFFFF for example )<br><br>
+If you want to use the colon between hours and minutes, (un-)comment "#define USE_COLON_SEPARATOR" in line 3732.<br>
+The colon led count per dot is set in line 3757.<br>
+You can change the colon color as a hex-colorcode in line 3758 ( 0xFFFFFF for example )<br><br>
 
 <p align="center">
   <img src="/images/wled_logo_akemi.png">
