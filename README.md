@@ -19,6 +19,8 @@ If you want to use the colon between hours and minutes, (un-)comment "#define US
 The colon led count per dot is set in line 3757.<br>
 You can change the colon color as a hex-colorcode in line 3758 ( 0xFFFFFF for example )<br><br>
 
+![Build by torn8o](https://cdn.thingiverse.com/assets/12/6c/ab/c7/0b/large_display_IMG_7318.jpg)  
+
 <p align="center">
   <img src="/images/wled_logo_akemi.png">
   <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
@@ -27,7 +29,7 @@ You can change the colon color as a hex-colorcode in line 3758 ( 0xFFFFFF for ex
   <a href="https://github.com/Aircoookie/WLED/wiki"><img src="https://img.shields.io/badge/quick_start-wiki-blue.svg?style=flat-square"></a>
   <a href="https://github.com/Aircoookie/WLED-App"><img src="https://img.shields.io/badge/app-wled-blue.svg?style=flat-square"></a>
   </p>
-  
+
 # Welcome to my project WLED! ✨
 
 A fast and feature-rich implementation of an ESP8266/ESP32 webserver to control NeoPixel (WS2812B, WS2811, SK6812, APA102) LEDs or also SPI based chipsets like the WS2801!
