@@ -3823,6 +3823,7 @@ uint16_t WS2812FX::mode_clock(void) {
   if(useAMPM) {
     if(digits[0] > 0) {
       for(uint8_t i = 0;i < 2*ledsPerSegment;i++) {
+        usedIndex++;
         setPixelColor(index+i, color_from_palette(usedIndex*map(SEGMENT.intensity, 0, 255, 0, 25)+(now / map(SEGMENT.speed, 0, 255, 400, 5)), false, true, 1));
       }
     }
