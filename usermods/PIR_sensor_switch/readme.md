@@ -9,26 +9,13 @@ The LED strip is switched [using a relay](https://github.com/Aircoookie/WLED/wik
 
 ## Webinterface
 
-The info page in the web interface shows the items below
-
-- the state of the sensor. By clicking on the state the sensor can be deactivated/activated. 
-**I recommend to deactivate the sensor before installing an OTA update**.
-- the remaining time of the off timer. 
-
-## JSON API
-
-The usermod supports  the following state changes:
-
-| JSON key   | Value range | Description                     |
-|------------|-------------|---------------------------------|
-| PIRenabled | bool        | Deactivdate/activate the sensor |
-| PIRoffSec  | 60 to 43200 | Off timer seconds               |
+The info page in the web interface shows the remaining time of the off timer. 
 
 ## Sensor connection
 
 My setup uses an HC-SR501 sensor, a HC-SR505 should also work.
 
-The usermod uses GPIO13 (D1 mini pin D7) for the sensor signal. 
+The usermod uses GPIO13 (D1 mini pin D7) by default for the sensor signal but can be changed in the Usermod settings page.
 [This example page](http://www.esp8266learning.com/wemos-mini-pir-sensor-example.php) describes how to connect the sensor.
 
 Use the potentiometers on the sensor to set the time-delay to the minimum and the sensitivity to about half, or slightly above.
@@ -55,7 +42,7 @@ Example **usermods_list.cpp**:
 //#include "usermod_v2_example.h"
 //#include "usermod_temperature.h"
 //#include "usermod_v2_empty.h"
-#include  "usermod_PIR_sensor_switch.h"
+#include "usermod_PIR_sensor_switch.h"
 
 void registerUsermods()
 {
@@ -72,4 +59,44 @@ void registerUsermods()
 }
 ```
 
+## API to enable/disable the PIR sensor from outside. For example from another usermod.
+
+To query or change the PIR sensor state the methods `bool PIRsensorEnabled()` and `void EnablePIRsensor(bool enable)` are available.
+
+When the PIR sensor state changes an MQTT message is broadcasted with topic `wled/deviceMAC/motion` and message `on` or `off`.
+Usermod can also be configured to just send MQTT message and not change WLED state using settings page as well as responding to motion only during nighttime (assuming NTP and lattitude/longitude are set to determine sunrise/sunset times).
+
+### There are two options to get access to the usermod instance:
+
+1. Include `usermod_PIR_sensor_switch.h` **before** you include the other usermod in `usermods_list.cpp'
+
+or
+
+2. Use `#include "usermod_PIR_sensor_switch.h"` at the top of the `usermod.h` where you need it.
+
+**Example usermod.h :**
+```cpp
+#include "wled.h"
+
+#include "usermod_PIR_sensor_switch.h"
+
+class MyUsermod : public Usermod {
+  //...
+
+  void togglePIRSensor() {
+    #ifdef USERMOD_PIR_SENSOR_SWITCH
+    PIRsensorSwitch *PIRsensor = (PIRsensorSwitch::*) usermods.lookup(USERMOD_ID_PIRSWITCH);
+    if (PIRsensor != nullptr) {
+      PIRsensor->EnablePIRsensor(!PIRsensor->PIRsensorEnabled());
+    }
+    #endif
+  }
+  //...
+};
+```
+
 Have fun - @gegu
+
+## Change log
+2021-04
+* Adaptation for runtime configuration.
