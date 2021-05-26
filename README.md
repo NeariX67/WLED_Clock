@@ -1,3 +1,29 @@
+# Modification info:
+This is a WLED Mod to fit DIY Machine's shelf. [VIDEO](https://www.youtube.com/watch?v=8E0SeycTzHw)
+<br>But since i added more customization features, it is not limited to his project alone.
+
+i added an effect called "Clock" that displays the current time on the shelf.<br>
+Color 1 controls the minutes,<br>
+Color 2 controls the hours,<br>
+Color 3 controls the downlights.<br>
+Colorpalettes are supported, but won't affect the downlights.<br>
+
+## Customization:
+Change "uint8_t ledsPerSegment = 9;" in [FX.cpp](https://github.com/NeariX67/WLED_Clock/blob/master/wled00/FX.cpp) (line 3740).
+<br>
+If you have built it just like in DIY Machine's video, you will have 207 LEDs for the clock and 12 LEDs for the downlights.<br><br>
+24h or 12h format is based on the wled time settings. Use checkbox "use 24h format" to switch between formats.
+<br><br>
+If you want to use the colon between hours and minutes, (un-)comment "#define USE_COLON_SEPARATOR" in line 3732.<br>
+The colon led count per dot is set in line 3757.<br>
+You can change the colon color as a hex-colorcode in line 3758 ( 0xFFFFFF for example )<br><br>
+
+![Build by torn8o](https://cdn.thingiverse.com/assets/12/6c/ab/c7/0b/large_display_IMG_7318.jpg)  
+
+
+
+___
+
 <p align="center">
   <img src="/images/wled_logo_akemi.png">
   <a href="https://github.com/Aircoookie/WLED/releases"><img src="https://img.shields.io/github/release/Aircoookie/WLED.svg?style=flat-square"></a>
