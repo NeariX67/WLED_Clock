@@ -1,3 +1,7 @@
+# You may also check out the pull request on the official WLED repository that (should) do the same as my fork!
+https://github.com/Aircoookie/WLED/pull/1873
+<hr>
+
 # Modification info:
 This is a WLED Mod to fit DIY Machine's shelf. [VIDEO](https://www.youtube.com/watch?v=8E0SeycTzHw)
 <br>But since i added more customization features, it is not limited to his project alone.
